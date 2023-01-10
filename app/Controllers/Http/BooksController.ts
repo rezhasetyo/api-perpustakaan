@@ -1,12 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database'
-import BookCrudValidator  from "App/Validators/BookCrudValidator";
+import BookCrudValidator from 'App/Validators/BookCrudValidator'
+import Book from 'App/Models/Book'
 
-export default class BooksController {
+export default class CategoriesController {
+
   public async index({response}: HttpContextContract) {
-    const book = await Database
-      .from('books') // 👈 gives an instance of select query builder
-      .select('*')
+    const book = await Book.all()
     
     return response.ok({
         message: "Berhasil menampilkan semua data buku",
@@ -16,12 +15,7 @@ export default class BooksController {
 
   public async store({response, request}: HttpContextContract) {
     const BookValidator = await request.validate(BookCrudValidator);
-
-    await Database
-      .table('books') // 👈 gives an instance of insert query builder
-      .insert(
-        BookValidator
-      )
+    await Book.create(BookValidator);
 
     return response.created({
       message: "Berhasil tambah data buku!",
@@ -29,43 +23,37 @@ export default class BooksController {
   }
 
   public async show({response, params}: HttpContextContract) {
-    const BookID = params.id
-
-    const book = await Database
-      .from('books')
-      .where('id', BookID)
-      .firstOrFail()
-
-    return response.ok({
-      message: "Berhasil menampilkan kategory " + BookID,
-      data:book
-    });
+    try {
+      const BookId = params.id
+      const book = await Book.findOrFail(BookId)
+      return response.ok({
+        message: "Berhasil menampilkan buku id : " + BookId,
+        data:book
+      });
+    } catch (error) {
+      return response.ok({
+        error: error.message
+      });
+    }
   }
 
   public async update({response, request, params}: HttpContextContract) {
-    const BookID = params.id
+    const BookId = params.id
     const BookValidator = await request.validate(BookCrudValidator);
-
-    await Database
-      .from('books')
-      .where('id', BookID)
-      .update(BookValidator)
+    await Book.query().where('id', BookId).update(BookValidator)
 
     return response.ok({
-      message: "Berhasil update data kategori!",
+      message: "Berhasil update data buku!",
     });
   }
 
   public async destroy({response, params}: HttpContextContract) {
-    const BookID = params.id
-
-    await Database
-      .from('books')
-      .where('id', BookID)
-      .delete()
+    const BookId = params.id
+    const book = await Book.findOrFail(BookId)
+    await book.delete()
 
     return response.ok({
-      message: "Berhasil hapus kategori " + BookID,
+      message: "Berhasil hapus data buku id : " + BookId,
     });
   }
 }
