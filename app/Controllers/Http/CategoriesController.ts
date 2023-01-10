@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
-import CategoryCrudValidator  from "App/Validators/CategoriesValidator";
+import CategoryCrudValidator  from "App/Validators/CategoryCrudValidator";
 
 export default class CategoriesController {
   public async index({response}: HttpContextContract) {

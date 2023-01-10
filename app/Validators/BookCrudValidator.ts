@@ -1,7 +1,7 @@
-import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class CategoriesValidator {
+export default class BookCrudValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -24,7 +24,11 @@ export default class CategoriesValidator {
    *    ```
    */
   public schema = schema.create({
-    nama: schema.string({}, [rules.minLength(4)]),
+    judul: schema.string(),
+    ringkasan: schema.string(),
+    tahun_terbit: schema.number(),
+    halaman: schema.number(),
+    kategori_id: schema.number(),
   })
 
   /**
@@ -40,6 +44,5 @@ export default class CategoriesValidator {
    */
   public messages: CustomMessages = {
     required: "{{ field }} tidak boleh kosong!",
-    "nama.minLength": "Nama kategori minimal 4 karakter",
   }
 }
