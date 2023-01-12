@@ -6,7 +6,7 @@ import Category from 'App/Models/Category'
 export default class CategoriesController {
   public async index({response}: HttpContextContract) {
     // const category = await Database.from('categories').select('*')
-    const category = await Category.all()
+    const category = await Category.query().preload("book")
     
     return response.ok({
         message: "Berhasil menampilkan semua data kategori",
@@ -28,7 +28,11 @@ export default class CategoriesController {
     // const category = await Database.from('categories').where('id', CategoryID).firstOrFail()
     try {
       const CategoryID = params.id
-      const category = await Category.findOrFail(CategoryID)
+      const category = await Category.query()
+          .where('id', CategoryID)
+          .preload("book")
+          .firstOrFail()
+
       return response.ok({
         message: "Berhasil menampilkan kategory " + CategoryID,
         data:category
