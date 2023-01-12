@@ -5,7 +5,7 @@ import Book from 'App/Models/Book'
 export default class CategoriesController {
 
   public async index({response}: HttpContextContract) {
-    const book = await Book.query().preload("category")
+    const book = await Book.query().preload("category").preload("users")
     
     return response.ok({
         message: "Berhasil menampilkan semua data buku",
@@ -31,7 +31,7 @@ export default class CategoriesController {
           .where('id', BookId)
           .preload("category")
           .firstOrFail()
-          
+
       return response.ok({
         message: "Berhasil menampilkan buku id : " + BookId,
         data:book
