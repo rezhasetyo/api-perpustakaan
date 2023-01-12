@@ -29,3 +29,4 @@ Route.resource('book','BooksController').apiOnly();
 
 Route.post('/register', 'AuthController.register')
 Route.post('/login', 'AuthController.login')
+Route.post('/update-profile', 'AuthController.updateProfile').middleware('auth')

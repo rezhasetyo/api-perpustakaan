@@ -19,6 +19,7 @@ export default class AuthController {
         }
     }
 
+
     public async login ({ request, response, auth }: HttpContextContract) {
         try {
             const loginValidation = schema.create({
@@ -52,4 +53,30 @@ export default class AuthController {
             }
         }
     }
+
+
+    public async updateProfile ({ request, response, auth }: HttpContextContract) {
+        const userData = auth.user;
+
+        const profileValidate = schema.create({
+            alamat: schema.string(),
+            bio: schema.string(),
+        })
+        await request.validate({schema: profileValidate});
+
+        const alamat = request.input("alamat");
+        const bio = request.input("bio");
+
+        const persistancePayload = {
+            alamat,
+            bio,
+         }
+
+         await userData?.related('profile').updateOrCreate({}, persistancePayload);
+
+         return response.created({
+            message: "Success create/update profile"
+         }) 
+    }
+
 }
