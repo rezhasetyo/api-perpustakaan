@@ -3,7 +3,8 @@
   "commands": [
     "./commands",
     "@adonisjs/core/build/commands/index.js",
-    "@adonisjs/lucid/build/commands"
+    "@adonisjs/lucid/build/commands",
+    "@adonisjs/mail/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -20,11 +21,17 @@
     "./providers/AppProvider",
     "@adonisjs/core",
     "@adonisjs/lucid",
-    "@adonisjs/auth"
+    "@adonisjs/auth",
+    "@adonisjs/mail",
+    "@adonisjs/view"
   ],
   "metaFiles": [
     {
       "pattern": "public/**",
+      "reloadServer": false
+    },
+    {
+      "pattern": "resources/views/**/*.edge",
       "reloadServer": false
     }
   ],

@@ -30,7 +30,9 @@ Route.resource('book','BooksController').apiOnly();
 Route.post('/register', 'AuthController.register')
 Route.post('/login', 'AuthController.login')
 Route.post('/update-profile', 'AuthController.updateProfile').middleware('auth')
+Route.post('/otp-verification', "AuthController.otpConfirmation").middleware("auth")
 
 Route.post('books/:id/pinjam', "PeminjamanController.store").middleware("auth")
 Route.get('/peminjaman', 'PeminjamanController.index')
 Route.get('/peminjaman/:id', 'PeminjamanController.show')
+
