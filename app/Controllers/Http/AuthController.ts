@@ -4,10 +4,47 @@ import AuthValidator from 'App/Validators/AuthValidator'
 import { schema } from '@ioc:Adonis/Core/Validator'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Database from '@ioc:Adonis/Lucid/Database'
-// import { Request } from '@adonisjs/core/build/standalone'
 
 export default class AuthController {
-
+    /**
+     * @swagger
+     * /register:
+     *      post:
+     *          tags:
+     *              - Authentication
+     *          parameters:
+     *              - name: email
+     *                description: Inputkan Email
+     *                in: query
+     *                required: true
+     *                format: email
+     *                type: string
+     *              - name: password
+     *                description: Inputkan Password
+     *                in: query
+     *                required: true
+     *                format: password
+     *                type: string
+     *              - name: role
+     *                description: Inputkan Role
+     *                schema:
+     *                       $ref: '#/components/schemas/Role'
+     *                in: query
+     *                required: true
+     *                type: string
+     *          responses:
+     *              200:
+     *                  data: Register Akun
+     *                  example:
+     *                      message: Success
+     * components:
+     *      schemas:
+     *          Role:
+     *              type: string
+     *              enum:
+     *                  - admin
+     *                  - user
+    */
     public async register ({ request, response }: HttpContextContract) {
         try {
             const authValidate = await request.validate(AuthValidator)
@@ -35,7 +72,31 @@ export default class AuthController {
         }
     }
 
-
+    /**
+     * @swagger
+     * /login:
+     *      post:
+     *          tags:
+     *              - Authentication
+     *          parameters:
+     *              - name: email
+     *                description: Inputkan Email
+     *                in: query
+     *                required: true
+     *                format: email
+     *                type: string
+     *              - name: password
+     *                description: Inputkan Password
+     *                in: query
+     *                required: true
+     *                format: password
+     *                type: string
+     *          responses:
+     *              200:
+     *                  data: Login Akun
+     *              example:
+     *                  message: Success
+     */
     public async login ({ request, response, auth }: HttpContextContract) {
         try {
             const loginValidation = schema.create({
@@ -69,8 +130,67 @@ export default class AuthController {
             }
         }
     }
+    
+     /**
+     * @swagger
+     * /otp-verification:
+     *      post:
+     *          tags:
+     *              - Authentication
+     *          parameters:
+     *              - name: email
+     *                description: Inputkan Email
+     *                in: query
+     *                required: true
+     *              - name: otp_code
+     *                description: Inputkan Otp Code
+     *                in: query
+     *                required: true
+     *          responses:
+     *              200:
+     *                  data: Otp Verification
+     *              example:
+     *                  message: Success
+     */
+    public async otpConfirmation({request, response}: HttpContextContract)   {
+        let otp_code = request.input('otp_code')
+        let email = request.input('email')
 
+        let user = await User.findBy('email', email)
+        let otpCheck = await Database.query().from('otp_codes').where('otp_code', otp_code).first()
+        
+        if(user?.id == otpCheck.user_id){
+            // user.is_verified = "1"
+            await user?.save()
+            return response.status(200).json({ message: 'berhasil konfirmasi OTP'})
+        } else {
+            return response.status(400).json({ message: 'gagal konfirmasi OTP'})
+        }
+    }
 
+     /**
+     * @swagger
+     * /update-profile:
+     *      post:
+     *          tags:
+     *              - Authentication
+     *          parameters:
+     *              - name: alamat
+     *                description: Inputkan Alamat
+     *                in: query
+     *                required: true
+     *              - name: bio
+     *                description: Inputkan Bio
+     *                in: query
+     *                required: true
+     *          security:
+     *              - bearerAuth: []
+     *          responses:
+     *              200:
+     *                  data: Update Profile
+     *              example:
+     *                  message: Success
+     */
     public async updateProfile ({ request, response, auth }: HttpContextContract) {
         const userData = auth.user;
 
@@ -93,24 +213,6 @@ export default class AuthController {
          return response.created({
             message: "Success create/update profile"
          }) 
-    }
-
-
-    public async otpConfirmation({request, response}: HttpContextContract)   {
-        let otp_code = request.input('otp_code')
-        let email = request.input('email')
-
-        let user = await User.findBy('email', email)
-        let otpCheck = await Database.query().from('otp_codes').where('otp_code', otp_code).first()
-        
-        if(user?.id == otpCheck.user_id){
-            user.is_verified = "1"
-            await user?.save()
-            return response.status(200).json({ message: 'berhasil konfirmasi OTP'})
-        } else {
-            return response.status(400).json({ message: 'gagal konfirmasi OTP'})
-        }
-
     }
 
 }

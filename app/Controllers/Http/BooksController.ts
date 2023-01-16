@@ -3,8 +3,19 @@ import BookCrudValidator from 'App/Validators/BookCrudValidator'
 import Book from 'App/Models/Book'
 
 export default class CategoriesController {
-
-  public async index({response}: HttpContextContract) {
+  /**
+   * @swagger
+   * /book:
+   *      get:
+   *          tags:
+   *              - Book
+   *          responses:
+   *              200:
+   *                  data: Get All Book
+   *              example:
+   *                  message: Success
+   */
+  public async index({response}: HttpContextContract): Promise<void> {
     const book = await Book.query().preload("category").preload("users")
     
     return response.ok({
@@ -12,7 +23,47 @@ export default class CategoriesController {
         data:book
     });
   }
-
+  
+  /**
+    * @swagger
+    * /book:
+    *      post:
+    *          tags:
+    *              - Book
+    *          security:
+    *              - bearerAuth: []
+    *          parameters:
+    *              - name: judul
+    *                description: Inputkan Judul
+    *                in: query
+    *                required: true
+    *                type: string
+    *              - name: ringkasan
+    *                description: Inputkan Ringkasan
+    *                in: query
+    *                required: true
+    *                type: string
+    *              - name: tahun_terbit
+    *                description: Inputkan Tahun Terbit
+    *                in: query
+    *                required: true
+    *                type: integer
+    *              - name: halaman
+    *                description: Inputkan Halaman
+    *                in: query
+    *                required: true
+    *                type: integer
+    *              - name: kategori_id
+    *                description: Inputkan Kategori Id
+    *                in: query
+    *                required: true
+    *                type: integer
+    *          responses:
+    *              200:
+    *                  data: Input Buku
+    *              example:
+    *                  message: Success
+    */
   public async store({response, request}: HttpContextContract) {
     const BookValidator = await request.validate(BookCrudValidator);
     await Book.create(BookValidator);
@@ -22,6 +73,24 @@ export default class CategoriesController {
     });
   }
 
+  /**
+    * @swagger
+    * /book/{id}:
+    *      get:
+    *          tags:
+    *              - Book
+    *          parameters:
+    *              - in: path
+    *                name: id
+    *                schema:
+    *                  type: integer
+    *                  required: true
+    *          responses:
+    *              200:
+    *                  data: Get All Book
+    *              example:
+    *                  message: Success
+    */
   public async show({response, params}: HttpContextContract) {
     try {
       const BookId = params.id
@@ -43,6 +112,51 @@ export default class CategoriesController {
     }
   }
 
+  /**
+    * @swagger
+    * /book/{id}:
+    *      put:
+    *          tags:
+    *              - Book
+    *          security:
+    *              - bearerAuth: []
+    *          parameters:
+    *              - in: path
+    *                name: id
+    *                schema:
+    *                  type: integer
+    *                  required: true
+    *              - name: judul
+    *                description: Inputkan Judul
+    *                in: query
+    *                required: true
+    *                type: string
+    *              - name: ringkasan
+    *                description: Inputkan Ringkasan
+    *                in: query
+    *                required: true
+    *                type: string
+    *              - name: tahun_terbit
+    *                description: Inputkan Tahun Terbit
+    *                in: query
+    *                required: true
+    *                type: integer
+    *              - name: halaman
+    *                description: Inputkan Halaman
+    *                in: query
+    *                required: true
+    *                type: integer
+    *              - name: kategori_id
+    *                description: Inputkan Kategori Id
+    *                in: query
+    *                required: true
+    *                type: integer
+    *          responses:
+    *              200:
+    *                  data: Input Buku
+    *              example:
+    *                  message: Success
+  */
   public async update({response, request, params}: HttpContextContract) {
     const BookId = params.id
     const BookValidator = await request.validate(BookCrudValidator);
@@ -53,6 +167,26 @@ export default class CategoriesController {
     });
   }
 
+  /**
+    * @swagger
+    * /book/{id}:
+    *      delete:
+    *          tags:
+    *              - Book
+    *          security:
+    *              - bearerAuth: []
+    *          parameters:
+    *              - in: path
+    *                name: id
+    *                schema:
+    *                  type: integer
+    *                  required: true
+    *          responses:
+    *              200:
+    *                  data: Get All Book
+    *              example:
+    *                  message: Success
+    */
   public async destroy({response, params}: HttpContextContract) {
     const BookId = params.id
     const book = await Book.findOrFail(BookId)
